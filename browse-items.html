@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Browse Items - CampusTrack</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body{
+  font-family:'Segoe UI',sans-serif;
+  background:#f4f7fb;
+}
+
+.header{
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:white;
+  padding:25px;
+  border-radius:0 0 20px 20px;
+}
+
+.item-card{
+  border-radius:16px;
+  border:none;
+  transition:0.25s;
+}
+
+.item-card:hover{
+  transform:translateY(-5px);
+}
+
+.item-img{
+  height:200px;
+  object-fit:cover;
+  width:100%;
+  border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-dark bg-dark px-4">
+<span class="navbar-brand">CampusTrack</span>
+<button class="btn btn-outline-light btn-sm" onclick="logout()">Logout</button>
+</nav>
+
+<!-- HEADER -->
+<div class="header text-center">
+<h2>Browse Lost Items 🔍</h2>
+<p class="mb-0">Check if your item has been reported</p>
+</div>
+
+<!-- ITEMS -->
+<div class="container mt-5 mb-5">
+<div class="row g-4" id="itemsContainer"></div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script src="js/firebase.js"></script>
+
+<script>
+
+auth.onAuthStateChanged((user)=>{
+
+if(!user){
+window.location.href="login.html";
+return;
+}
+
+loadItems();
+
+});
+
+
+/* Logout */
+function logout(){
+auth.signOut().then(()=>{
+window.location.href="login.html";
+});
+}
+
+
+/* Load all lost items */
+function loadItems(){
+
+const container=document.getElementById("itemsContainer");
+
+db.collection("lostItems")
+.orderBy("createdAt","desc")
+.onSnapshot((snapshot)=>{
+
+container.innerHTML="";
+
+if(snapshot.empty){
+
+container.innerHTML=`
+<div class="text-center text-muted">
+No lost items reported yet.
+</div>
+`;
+
+return;
+}
+
+snapshot.forEach((doc)=>{
+
+const item=doc.data();
+const id=doc.id;
+
+const image = item.imageUrl ? 
+`<img src="${item.imageUrl}" class="item-img mb-3">`
+:
+`<div class="bg-light text-center p-5 rounded mb-3">
+No Image
+</div>`;
+
+const name = item.itemName || "Unknown Item";
+const category = item.category || "N/A";
+const location = item.location || "Not specified";
+const description = item.description || "No description provided";
+const status = item.status || "Lost";
+
+container.innerHTML+=`
+
+<div class="col-md-4">
+
+<div class="card item-card p-3 shadow-sm">
+
+${image}
+
+<h5>${name}</h5>
+
+<p><strong>Category:</strong> ${category}</p>
+
+<p><strong>Location:</strong> ${location}</p>
+
+<p class="text-muted">${description}</p>
+
+<span class="badge bg-warning text-dark mb-3">
+${status}
+</span>
+
+<!-- 🔥 NEW BUTTON -->
+<button class="btn btn-primary btn-sm"
+onclick="viewItem('${id}')">
+View Details
+</button>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+});
+
+}
+
+
+/* 🔥 VIEW ITEM PAGE */
+function viewItem(id){
+window.location.href=`view-item.html?id=${id}`;
+}
+
+</script>
+
+</body>
+</html>

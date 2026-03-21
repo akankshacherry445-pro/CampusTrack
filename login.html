@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusTrack Login</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    height: 100vh;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.floating-logos img {
+    position: fixed;
+    width: 140px;
+    opacity: 0.05;
+    z-index: 0;
+    animation: floatMove 10s ease-in-out infinite;
+}
+
+.floating-logos img:nth-child(1){top:10%;left:15%;}
+.floating-logos img:nth-child(2){top:70%;left:80%;}
+.floating-logos img:nth-child(3){top:40%;left:60%;}
+.floating-logos img:nth-child(4){top:80%;left:20%;}
+.floating-logos img:nth-child(5){top:20%;left:85%;}
+
+@keyframes floatMove {
+    0%{transform:translateY(0px);}
+    50%{transform:translateY(-25px);}
+    100%{transform:translateY(0px);}
+}
+
+.login-card {
+    position: relative;
+    z-index: 1;
+    width: 360px;
+    padding: 40px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    text-align: center;
+    color: white;
+}
+
+.top-logo {
+    width: 70px;
+    margin-bottom: 10px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: none;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(to right,#00c6ff,#0072ff);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover { transform: scale(1.05); }
+
+.switch-link a {
+    color: #00c6ff;
+    text-decoration: none;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="floating-logos">
+  <img src="logo-bg.png">
+  <img src="logo-bg.png">
+  <img src="logo-bg.png">
+  <img src="logo-bg.png">
+  <img src="logo-bg.png">
+</div>
+
+<div class="login-card">
+    <img src="logo-top.png" class="top-logo">
+    <h2>CampusTrack Login</h2>
+
+    <input type="email" id="email" placeholder="Enter Email">
+    <input type="password" id="password" placeholder="Enter Password">
+
+    <button onclick="login()">Login</button>
+
+    <div class="switch-link">
+        Don't have an account?
+        <a href="register.html">Register</a>
+    </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script src="js/firebase.js"></script>
+<script src="js/auth.js"></script>
+
+</body>
+</html>
