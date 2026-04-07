@@ -1,5 +1,3 @@
-// firebase.js
-
 const firebaseConfig = {
   apiKey: "AIzaSyDgu02UF-poA4KULjOAY1AljQ5CgD_S8P0",
   authDomain: "campustrack-35a16.firebaseapp.com",
@@ -11,6 +9,6 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-const auth = firebase.auth();
-const db = firebase.firestore();
-const storage = firebase.storage();
+// ✅ GLOBAL
+window.auth = firebase.auth();
+window.db = firebase.firestore();

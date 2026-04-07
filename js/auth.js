@@ -1,11 +1,8 @@
-// ================= REGISTER =================
+// REGISTER
 function register() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
-  const roleElement = document.getElementById("role");
-  const role = roleElement ? roleElement.value : "student";
 
-  // ✅ validations
   if (!email || !password) {
     alert("Please fill all fields.");
     return;
@@ -21,17 +18,17 @@ function register() {
     return;
   }
 
-  // 🔥 create user
+  // ✅ FORCE STUDENT ROLE
+  const role = "student";
+
   auth.createUserWithEmailAndPassword(email, password)
     .then((userCredential) => {
       const user = userCredential.user;
 
-      // ✅ store role in Firestore
       return db.collection("users").doc(user.uid).set({
         email: email,
         role: role,
-        verified: true,
-        createdAt: new Date()
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
     })
     .then(() => {
@@ -40,21 +37,24 @@ function register() {
     })
     .catch((error) => {
       alert(error.message);
-      console.error(error);
     });
 }
 
 
-// ================= LOGIN =================
 // LOGIN
 function login() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
 
+  if (!email.endsWith("@mlrit.ac.in")) {
+    alert("Use your campus email only!");
+    return;
+  }
+
   auth.signInWithEmailAndPassword(email, password)
     .then(async (userCredential) => {
-      const uid = userCredential.user.uid;
 
+      const uid = userCredential.user.uid;
       const doc = await db.collection("users").doc(uid).get();
 
       if (!doc.exists) {
@@ -64,15 +64,13 @@ function login() {
 
       const role = doc.data().role;
 
-      // ✅ IMPORTANT — file names must match
       if (role === "admin") {
         window.location.href = "admin.html";
       } else {
-        window.location.href = "dashboard.html"; // ← your student page
+        window.location.href = "dashboard.html";
       }
     })
     .catch((error) => {
       alert(error.message);
-      console.error(error);
     });
 }

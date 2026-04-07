@@ -91,16 +91,18 @@ Submit Report
 </div>
 </div>
 
-<!-- Firebase Scripts -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
 <script src="js/firebase.js"></script>
 <script src="js/match.js"></script>
 
 <script>
+
+const auth = firebase.auth();
+const db = firebase.firestore();
 
 let currentUser = null;
 
@@ -141,7 +143,7 @@ reader.readAsDataURL(file);
 
 });
 
-/* 🔔 NOTIFICATION UI */
+/* NOTIFICATION */
 function showNotification(msg){
 
 const div = document.createElement("div");
@@ -155,15 +157,10 @@ div.style.background="#007bff";
 div.style.color="white";
 div.style.padding="10px";
 div.style.borderRadius="8px";
-div.style.boxShadow="0 5px 15px rgba(0,0,0,0.2)";
-div.style.zIndex="999";
 
 document.body.appendChild(div);
 
-setTimeout(()=>{
-div.remove();
-},3000);
-
+setTimeout(()=>{ div.remove(); },3000);
 }
 
 /* SUBMIT ITEM */
@@ -184,10 +181,8 @@ try{
 
 let imageUrl = "";
 
-/* 🔥 CLOUDINARY UPLOAD (SAFE) */
+/* IMAGE UPLOAD (OPTIONAL) */
 if(imageFile){
-
-try{
 
 const formData = new FormData();
 formData.append("file", imageFile);
@@ -205,21 +200,15 @@ const data = await response.json();
 if(data.secure_url){
 imageUrl = data.secure_url;
 }else{
-console.warn("Cloudinary failed:", data);
-showNotification("⚠ Image upload failed");
-}
-
-}catch(err){
-console.error("Upload error:", err);
 showNotification("⚠ Image upload failed");
 }
 
 }
 
-/* 🔥 SAVE TO FIRESTORE */
+/* 🔥 FINAL FIXED FIRESTORE SAVE */
 await db.collection("lostItems").add({
 
-userId: currentUser.uid,
+userId: currentUser.uid,            // ✅ ADDED
 userEmail: currentUser.email,
 
 itemName: itemName,
@@ -229,12 +218,12 @@ description: description,
 
 imageUrl: imageUrl || "",
 
-status: "Pending",
+status: "pending",                 // ✅ FIXED
 createdAt: firebase.firestore.FieldValue.serverTimestamp()
 
 });
 
-/* 🔥 MATCHING SYSTEM */
+/* MATCHING */
 const newItem = {
 itemName,
 description,
@@ -247,12 +236,11 @@ const matches = await findMatches(newItem);
 
 if(matches.length > 0){
 showNotification("🎯 Matches found!");
-console.log("Matches:", matches);
 }else{
 showNotification("✅ Item reported successfully");
 }
 
-/* RESET FORM */
+/* RESET */
 document.getElementById("itemName").value="";
 document.getElementById("location").value="";
 document.getElementById("description").value="";
@@ -261,8 +249,8 @@ document.getElementById("preview").style.display="none";
 
 }catch(error){
 
-console.error("🔥 ERROR:", error);
-alert("Error reporting item. Check console");
+console.error(error);
+alert("Error reporting item");
 
 }
 
